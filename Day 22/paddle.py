@@ -10,10 +10,12 @@ class Paddle(Turtle):
         self.shapesize(stretch_wid=5, stretch_len=1)
         self.teleport(x, y)
     
+
     def up(self):
         """Move upwards (towards 90 degrees)"""
         self.sety(self.ycor() + 20)
 
+
     def down(self):
-        """move downwards (towards 270 degrees)"""
+        """Move downwards (towards 270 degrees)"""
         self.sety(self.ycor() - 20)
