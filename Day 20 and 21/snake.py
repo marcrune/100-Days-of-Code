@@ -20,6 +20,7 @@ class Snake():
             self.add_segment(position)
 
     def add_segment(self, position):
+        """adds a new segment to the snake after it eats a food piece to the position argument"""
         new_segment = Turtle(shape='square')
         new_segment.fillcolor('white')
         new_segment.penup()
@@ -27,7 +28,15 @@ class Snake():
         self.segments.append(new_segment)
 
     def extend(self):
+        """extends the snake by adding the newer segment to the last position of the segments list"""
         self.add_segment(self.segments[-1].position())
+
+    def reset(self):
+        for seg in self.segments:
+            seg.goto(1000, 1000)
+        self.segments.clear()
+        self.create_snake()
+        self.head = self.segments[0]
 
     def move(self):
         """moves the snake by MOVE_DISTANCE constant"""
