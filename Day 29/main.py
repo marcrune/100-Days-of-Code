@@ -2,6 +2,7 @@ import tkinter
 import tkinter.messagebox
 import random
 import pyperclip
+import json
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_password():
@@ -29,16 +30,33 @@ def generate_password():
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def save():
     """Writes the website, e-mail/user and password to the data.txt file and clears all fields except e-mail/user afterwards."""
+    new_data = {
+        website_entry.get(): {
+            "email": user_entry.get(),
+            "password": password_entry.get(),
+        }
+    }
+
+
     if len(website_entry.get()) == 0 or len(password_entry.get()) == 0:
         tkinter.messagebox.showwarning(title="Oops", message="Please don't leave any of the fields empty.")
     else:
-        is_ok = tkinter.messagebox.askokcancel(title=website_entry.get(), message=f"These are the details entered: \nEmail: {user_entry.get()} "
-                                            f"\nPassword: {password_entry.get()} \nIs it ok to save?")
-        
-        if is_ok:
-            with open("./data.txt", mode="a") as file:
-                file.write(f"{website_entry.get().title()} | {user_entry.get()} | {password_entry.get()}\n")
-        
+        try:
+            with open("./data.json", mode="r") as file:
+                # Reads the json file. Must use the "r" argument in the open function.
+                data = json.load(file)
+        except FileNotFoundError:
+            with open("./data.json", mode="w") as file:
+                # Writes to the json file. Must use the "w" argument in the open function.
+                json.dump(new_data, file, indent=4)
+        else:
+            # Updates old data with new data.
+            data.update(new_data)
+
+            with open("./data.json", mode="w") as file:
+                # Writes to the json file. Must use the "w" argument in the open function.
+                json.dump(data, file, indent=4)
+        finally:
             clear_fields()
 
 
@@ -46,6 +64,21 @@ def clear_fields():
     """Clears website and password entry fields."""
     website_entry.delete(0, "end")
     password_entry.delete(0, "end")
+
+# ---------------------------- SEARCH DATABASE ---------------------------- #
+def find_password():
+    """Searches the database for a website and returns the username and password for that website"""
+    try:
+        with open("./data.json", "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        tkinter.messagebox.showwarning(title="Error", message="No Data File Found.")
+    else:
+        if website_entry.get().lower() not in data:
+            tkinter.messagebox.showinfo(title="Error", message=f"No details for {website_entry.get().title()} exists.")
+        else:
+            tkinter.messagebox.showinfo(title=website_entry.get().title(), message=f"Email: {data[website_entry.get().lower()]["email"]}\n"
+                                                                       f"Password: {data[website_entry.get().lower()]["password"]}")
 
 # ---------------------------- UI SETUP ------------------------------- #
 # Window settings
@@ -72,9 +105,9 @@ password_label = tkinter.Label(text="Password:")
 password_label.grid(column=0, row=3)
 
 # Website entry
-website_entry = tkinter.Entry(width=50)
+website_entry = tkinter.Entry(width=32)
 website_entry.focus()
-website_entry.grid(column=1, row=1, columnspan=2)
+website_entry.grid(column=1, row=1)
 
 # Email/Username entry
 user_entry = tkinter.Entry(width=50)
@@ -92,6 +125,10 @@ generate_button.grid(column=2, row=3, sticky="W")
 # Add button
 add_button = tkinter.Button(text="Add", width=43, command=save)
 add_button.grid(column=1, row=4, columnspan=2)
+
+# Search button
+search_button = tkinter.Button(text="Search", width=14, command=find_password)
+search_button.grid(column=2, row=1)
 
 
 window.mainloop()
