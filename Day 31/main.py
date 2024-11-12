@@ -13,15 +13,16 @@ data = pd.read_csv("./data/french_words.csv")
 data_dict = data.to_dict(orient="records")
 
 # -------------------------------------- FUNCTIONS --------------------------------------
+word = ""
 # Random word function
 def random_word():
     """Picks a random french word and puts it into the canvas."""
+    global word
     word = choice(data_dict)["French"]
     canvas.itemconfig(canvas_image, image=front_img)
     canvas.itemconfig(card_title, text=data.columns[0], fill="black")
-    canvas.itemconfig(card_word, text=word)
+    canvas.itemconfig(card_word, text=word, fill="black")
     window.after(3000, turn_card)
-    return word
 
 def get_english_translation():
     for dict in data_dict:
@@ -34,6 +35,7 @@ def turn_card():
     canvas.itemconfig(canvas_image, image=back_image)
     canvas.itemconfig(card_title, text=data.columns[1], fill="white")
     canvas.itemconfig(card_word, text=get_english_translation(), fill="white")
+
 # -------------------------------------- UI CONFIG --------------------------------------
 # Canvas
 canvas = tkinter.Canvas(width=800, height=526, highlightthickness=0, background=BACKGROUND_COLOR)
@@ -53,11 +55,6 @@ wrong_image = tkinter.PhotoImage(file="./images/wrong.png")
 wrong_button = tkinter.Button(image=wrong_image, highlightthickness=0, command=random_word)
 wrong_button.grid(column=0, row=1)
 
-is_working = False
-while not is_working:
-    word = random_word()
-
-# print(data.iloc[0].values[1])
-# print(data.index[data["French"] == "partie"].values[0])
+random_word()
 
 window.mainloop()
