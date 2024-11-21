@@ -26,7 +26,7 @@ height = float(input("Height: "))
 weight = int(input("Weight: "))
 
 if height > 3:
-    # Even though there are no problems in the code, it raises a developer created error because the height is unrealistic.
+    # Even though there are no problems in the code, it raises a developer created error because the height is unrealistic
     raise ValueError("Human height should not be over 3 meters.")
 
 bmi = weight / height ** 2
